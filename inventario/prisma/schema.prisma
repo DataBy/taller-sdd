@@ -1,0 +1,134 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id            String              @id @default(uuid())
+  name          String
+  categoryId    String
+  category      Category            @relation(fields: [categoryId], references: [id])
+  description   String?
+  stockCurrent  Int                 @default(0)
+  stockMinimum  Int                 @default(0)
+  pricePurchase Decimal             @default(0)
+  priceSale     Decimal             @default(0)
+  supplierId    String?
+  supplier      Supplier?           @relation(fields: [supplierId], references: [id])
+  location      String?
+  status        String              @default("active")
+  variants      Variant[]
+  movements     InventoryMovement[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([name])
+  @@index([categoryId])
+  @@index([supplierId])
+  @@index([status])
+}
+
+model Variant {
+  id             String              @id @default(uuid())
+  productId      String
+  product        Product             @relation(fields: [productId], references: [id])
+  attributesJson String
+  attributesHash String
+  sku            String?             @unique
+  stockCurrent   Int                 @default(0)
+  stockMinimum   Int                 @default(0)
+  location       String?
+  status         String              @default("active")
+  movements      InventoryMovement[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([productId, attributesHash])
+  @@index([productId])
+  @@index([status])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  products    Product[]
+}
+
+model Supplier {
+  id        String    @id @default(uuid())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  notes     String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model InventoryMovement {
+  id             String       @id @default(uuid())
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id])
+  variantId      String?
+  variant        Variant?     @relation(fields: [variantId], references: [id])
+  type           String
+  quantityBefore Int
+  quantityAfter  Int
+  quantityDelta  Int
+  reason         String?
+  origin         String
+  importBatchId  String?
+  importBatch    ImportBatch? @relation(fields: [importBatchId], references: [id])
+  chatActionId   String?
+  chatAction     ChatAction?  @relation(fields: [chatActionId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([productId])
+  @@index([variantId])
+  @@index([type])
+  @@index([origin])
+  @@index([importBatchId])
+  @@index([chatActionId])
+}
+
+model ImportBatch {
+  id          String              @id @default(uuid())
+  filename    String
+  fileType    String
+  totalRows   Int
+  validRows   Int
+  errorRows   Int
+  status      String              @default("pending")
+  errorsJson  String              @default("[]")
+  movements   InventoryMovement[]
+  createdAt   DateTime            @default(now())
+  confirmedAt DateTime?
+
+  @@index([status])
+}
+
+model ChatAction {
+  id             String              @id @default(uuid())
+  intent         String
+  parametersJson String
+  status         String              @default("proposed")
+  resultJson     String?
+  movements      InventoryMovement[]
+  createdAt      DateTime            @default(now())
+  confirmedAt    DateTime?
+}
+
+model AppSettings {
+  id                      Int      @id
+  currency                String   @default("USD")
+  openrouterModel         String   @default("openai/gpt-4o-mini")
+  lowStockGlobalThreshold Int?
+  activeCategoriesJson    String   @default("[]")
+  updatedAt               DateTime @updatedAt
+}
