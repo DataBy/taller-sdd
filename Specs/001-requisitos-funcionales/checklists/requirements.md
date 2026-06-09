@@ -1,4 +1,4 @@
-# Specification Quality Checklist: UX/UI y Diseño Visual — Inventario Souvenirs
+# Specification Quality Checklist: Requisitos Funcionales — Inventario Souvenirs
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-06-09
@@ -31,10 +31,8 @@
 
 ## Notes
 
-- 34 requisitos de UI (FR-UI-01 a FR-UI-34) cubiertos por 6 historias de usuario priorizadas.
-- P1: navegación, dashboard, tabla de inventario (núcleo de uso diario).
-- P2: formularios, chatbot, importación (flujos críticos con interacción compleja).
-- Edge cases cubren: estado vacío en todas las pantallas, producto agotado vs stock bajo, error de servicio IA, archivo inválido en importación, precios no configurados.
-- Paleta de 6 colores hex definida como contrato visual no negociable.
-- Assumption sobre panel de chatbot (lateral vs dedicado) marcada como decisión pendiente para PLAN-02.
+- 42 requisitos funcionales (FR-01 a FR-42) cubiertos por 4 historias de usuario prioritizadas.
+- Edge cases cubren: stock negativo, duplicados en importación, chatbot fuera de dominio, archivo vacío, variantes duplicadas, pérdida de conexión IA.
+- Assumptions documentan: sin autenticación, sin multi-sucursal, sin ventas, sin conversión de divisas.
+- Criterios de éxito verificables sin conocer implementación (tiempo, cobertura, trazabilidad).
 - Spec lista para `/speckit-plan`.
